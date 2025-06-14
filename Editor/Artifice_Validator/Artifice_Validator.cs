@@ -10,6 +10,7 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
+using Object = UnityEngine.Object;
 
 namespace ArtificeToolkit.Editor
 {
@@ -23,7 +24,7 @@ namespace ArtificeToolkit.Editor
             public readonly string Message;
             public readonly LogType LogType;
             public readonly Sprite Sprite;
-            public readonly Component OriginComponent;
+            public readonly Object OriginObject;
             public readonly string OriginLocationName;
             public readonly Type OriginValidatorType;
 
@@ -36,7 +37,7 @@ namespace ArtificeToolkit.Editor
                 LogType logType,
                 Type originValidatorType,
                 // Optional Parameters (Metadata)
-                Component originComponent = null,
+                Object originObject = null,
                 string originLocationName = "",
                 bool hasAutoFix = false,
                 Action autoFixAction = null
@@ -45,7 +46,7 @@ namespace ArtificeToolkit.Editor
                 Sprite = sprite;
                 Message = message;
                 LogType = logType;
-                OriginComponent = originComponent;
+                OriginObject = originObject;
                 OriginLocationName = originLocationName;
                 OriginValidatorType = originValidatorType;
 
@@ -179,8 +180,8 @@ namespace ArtificeToolkit.Editor
         #region FIELD
 
         // Public events to notify on refresh and log counter refresh.
-        public UnityEvent OnLogsRefreshEvent;
-        public UnityEvent OnLogCounterRefreshedEvent;
+        public UnityEvent OnLogsRefreshEvent = new();
+        public UnityEvent OnLogCounterRefreshedEvent = new();
 
         // Config, Logs and LogCounters
         private Artifice_SCR_ValidatorConfig _config;
@@ -240,8 +241,6 @@ namespace ArtificeToolkit.Editor
 
             _isRefreshing = false;
             _logCounters = new ValidatorLogCounters(false);
-            OnLogsRefreshEvent = new UnityEvent();
-            OnLogCounterRefreshedEvent = new UnityEvent();
 
             // Initialize/Get Scenes
             for (var i = 0; i < SceneManager.sceneCount; i++)
