@@ -208,8 +208,16 @@ namespace ArtificeToolkit.Editor
                 }
             }
             else
+            {
+#if UNITY_2022_2_OR_NEWER
+                var field = new PropertyField(property);
+                field.Bind(property.serializedObject);
+                container.Add(field);
+#else
                 container.Add(CreateIMGUIField(property));
-
+#endif
+            }
+            
             return container;
         }
 
@@ -346,6 +354,9 @@ namespace ArtificeToolkit.Editor
             // Create base container for property.
             var container = new VisualElement();
             container.AddToClassList("property-container");
+            
+            // Create the custom attributes GUI
+            container = CreateCustomAttributesGUI(property, container);
 
             // Selector container
             var selectorContainer = new VisualElement();
@@ -422,7 +433,7 @@ namespace ArtificeToolkit.Editor
                 referenceContainer.RemoveFromClassList("reference-container");
                 
                 // Get value from type map, create instance and draw from artifice.
-                if (property.managedReferenceValue != null)
+                if (property.managedReferenceValue != null && property.hasVisibleChildren)
                 {
                     referenceContainer.RemoveFromClassList("hide");
                     referenceContainer.AddToClassList("reference-container");
